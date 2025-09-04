@@ -7,6 +7,7 @@ dotenv.config();
 const port=process.env.PORT || 5000;
 const db= require("./config/db")
 const auth = require("./routes/auth");
+const schoolRoutes = require("./routes/schoolRoutes");  
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
@@ -17,8 +18,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",  // ✅ must be exact origin
-    credentials: true,                 // ✅ allow cookies
+    origin: "http://localhost:3000",  //must be exact origin
+    credentials: true,                 // allow cookies
   })
 );
 
@@ -32,8 +33,8 @@ app.get('/',(req,res)=>{
 }   )
 
 // Import routes
-
 app.use("/api/auth", auth);
+app.use("/api/school", schoolRoutes);
 
 app.listen(port,()=>{
     console.log(`Example app listening on port ${port}`);

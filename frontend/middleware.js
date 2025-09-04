@@ -1,3 +1,6 @@
+//Note: create a .env file in the root directory with JWT_SECRET variable
+//JWT_SECRET=mysecretkey
+
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 

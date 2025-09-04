@@ -11,6 +11,7 @@ export default function AddSchoolForm() {
     pincode: "",
     phone: "",
     email: "",
+    
     principalName: "",
     principalEmail: "",
     principalPassword: "",
@@ -20,19 +21,39 @@ export default function AddSchoolForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submitting school data:", formData);
 
-    // 🔹 TODO: Call backend API
-    // const res = await fetch("http://localhost:4000/api/schools/add", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(formData),
-    // });
-    // const data = await res.json();
-    // console.log(data);
-  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("Submitting school data:", formData);
+
+  const res = await fetch("http://localhost:4000/api/school/add-school", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
+
+  const data = await res.json();
+  console.log("Response from server:", data);
+
+  alert(data.message || "School added successfully!");
+
+  // reset properly (don't set to {})
+  setFormData({
+    schoolName: "",
+    schoolCode: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+    phone: "",
+    email: "",
+    principalName: "",
+    principalEmail: "",
+    principalPassword: "",
+  });
+};
+
 
   return (
     <form
@@ -125,15 +146,18 @@ export default function AddSchoolForm() {
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+
           <input
             type="text"
             name="principalName"
-            placeholder="Principal Full Name"
+            placeholder="Principal's name"
             value={formData.principalName}
             onChange={handleChange}
             className="p-2 border rounded"
             required
           />
+
           <input
             type="email"
             name="principalEmail"
