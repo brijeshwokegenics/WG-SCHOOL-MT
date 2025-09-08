@@ -7,6 +7,7 @@ const principalSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["owner", "principal", "teacher", "student"], required: true },
+  school: { type: mongoose.Schema.Types.ObjectId, ref: "Schools" }  //link to school
  // schoolCode: { type: String, required: true }, // link to school
 }, { timestamps: true });
 

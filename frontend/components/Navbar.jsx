@@ -1,13 +1,3 @@
-// import React from 'react'
-
-// const Navbar = () => {
-//   return (
-//     <div>Navbar</div>
-//   )
-// }
-
-// export default Navbar
-
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,15 +7,38 @@ export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState(null);
 
-  // Load user from localStorage (or cookies if you prefer)
+  // Fetch user info from backend
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("http://localhost:4000/api/auth", {
+          credentials: "include", // sends HttpOnly cookies automatically
+        });
+        if (res.ok) {
+          const data = await res.json();
+          console.log(data);
+          setUser(data.user); // assuming backend returns { user: { email, role } }
+        } else {
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setUser(null);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:4000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Error logging out:", err);
+    }
     setUser(null);
     router.push("/login");
   };
@@ -45,21 +58,12 @@ export default function Navbar() {
         <Link href="/about" className="hover:text-yellow-300 transition">About</Link>
       </div>
 
-      {/* Right Side (Auth & Role Based) */}
+      {/* Right Side */}
       <div className="space-x-4">
-        {user ? (
+        
           <>
-            <span className="font-semibold">Hi, {user.email}</span>
-
-            {/* Role-based link */}
-            {user.role === "owner" && (
-              <Link
-                href="/admin"
-                className="bg-yellow-500 px-3 py-1 rounded-lg hover:bg-yellow-600 transition"
-              >
-                Admin Dashboard
-              </Link>
-            )}
+            
+            
 
             <button
               onClick={handleLogout}
@@ -68,14 +72,13 @@ export default function Navbar() {
               Logout
             </button>
           </>
-        ) : (
-          <Link
+                  <Link
             href="/login"
             className="bg-blue-500 px-3 py-1 rounded-lg hover:bg-blue-600 transition"
           >
             Login
           </Link>
-        )}
+        
       </div>
     </nav>
   );

@@ -45,6 +45,7 @@ exports.addSchool = async (req, res) => {
       email: principalEmail,
       password: hashedPassword,
       role: "principal",
+      school: savedSchool._id, // ✅ link here
      // schoolCode: schoolCode, // link principal to the school
     });
     await principal.save();
@@ -59,12 +60,100 @@ exports.addSchool = async (req, res) => {
 
 //viewing schools
 
+// exports.getAllSchools = async (req, res) => {
+//   try {
+//     const schools = await School.find();
+//     console.log("Fetched schools:", schools);
+//     res.status(200).json(schools);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching schools", error: error.message });
+//   }
+// };
+
+
+
+// exports.getAllSchools = async (req, res) => {
+//   try {
+//     const schools = await School.find().lean();
+
+//     // fetch principals for each school
+//     const principals = await PrincipalModel.find().lean();
+
+//     const result = schools.map((school) => {
+//       const principal = principals.find(
+//         (p) => p.school?.toString() === school._id.toString()
+//       );
+//       return {
+//         ...school,
+//         principal: principal
+//           ? { name: principal.fullName, email: principal.email }
+//           : null,
+//       };
+//     });
+
+//     res.status(200).json(result);
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching schools", error: error.message });
+//   }
+// };
+
+
+// get all schools with principal details-> displayed on owner dashboard
 exports.getAllSchools = async (req, res) => {
   try {
-    const schools = await School.find();
-    console.log("Fetched schools:", schools);
+    const schools = await School.find().populate("principal", "fullName email").lean();
+
     res.status(200).json(schools);
   } catch (error) {
     res.status(500).json({ message: "Error fetching schools", error: error.message });
+  }
+};
+
+//get school by id
+// controllers/schoolController.js
+
+exports.getSchoolById = async (req, res) => {
+  try {
+    const school = await School.findById(req.params.id).populate("principal");
+    if (!school) return res.status(404).json({ message: "School not found" });
+
+    res.json(school);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching school", error: error.message });
+  }
+};
+
+//update school details
+exports.updateSchool = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updatedSchool = await School.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedSchool) return res.status(404).json({ message: "School not found" });
+
+    res.json({ message: "School updated successfully", school: updatedSchool });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating school", error: error.message });
+  }
+};
+
+//delete school
+exports.deleteSchool = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedSchool = await School.findByIdAndDelete(id);
+    if (!deletedSchool) return res.status(404).json({ message: "School not found" });
+
+    // Optionally, delete principal linked to school
+    await PrincipalModel.deleteOne({ school: id });
+
+    res.json({ message: "School deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting school", error: error.message });
   }
 };

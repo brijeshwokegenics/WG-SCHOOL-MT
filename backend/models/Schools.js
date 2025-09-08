@@ -12,4 +12,18 @@ const schoolSchema = new mongoose.Schema({
   email: String,
 }, { timestamps: true });
 
+// Make a "virtual" relationship for populate
+/////////////////////////
+schoolSchema.virtual("principal", {
+  ref: "PrincipalModel",
+  localField: "_id",
+  foreignField: "school",
+  justOne: true,
+});
+
+schoolSchema.set("toObject", { virtuals: true });
+schoolSchema.set("toJSON", { virtuals: true });
+
+///////////////////////
+
 module.exports = mongoose.model("Schools", schoolSchema);
