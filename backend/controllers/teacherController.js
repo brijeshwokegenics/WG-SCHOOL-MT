@@ -30,7 +30,7 @@ exports.addTeacher = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Create teacher with school reference
+    
     const newTeacher = new Teacher({
       fullName,
       email,
