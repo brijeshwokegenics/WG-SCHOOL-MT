@@ -1,9 +1,9 @@
 
 
 const express = require("express");
-const { addSchool } = require("../controller/schoolController");
-const { getAllSchools } = require("../controller/schoolController");
-const schoolController = require("../controller/schoolController");
+const { addSchool } = require("../controllers/schoolController");
+const { getAllSchools } = require("../controllers/schoolController");
+const schoolController = require("../controllers/schoolController");
 
 const router = express.Router();
 

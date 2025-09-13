@@ -51,51 +51,12 @@ exports.addSchool = async (req, res) => {
     await principal.save();
 
     res.status(201).json({ message: "School and principal created successfully", school: savedSchool });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error creating school", error: error.message });
   }
 };
-
-
-//viewing schools
-
-// exports.getAllSchools = async (req, res) => {
-//   try {
-//     const schools = await School.find();
-//     console.log("Fetched schools:", schools);
-//     res.status(200).json(schools);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching schools", error: error.message });
-//   }
-// };
-
-
-
-// exports.getAllSchools = async (req, res) => {
-//   try {
-//     const schools = await School.find().lean();
-
-//     // fetch principals for each school
-//     const principals = await PrincipalModel.find().lean();
-
-//     const result = schools.map((school) => {
-//       const principal = principals.find(
-//         (p) => p.school?.toString() === school._id.toString()
-//       );
-//       return {
-//         ...school,
-//         principal: principal
-//           ? { name: principal.fullName, email: principal.email }
-//           : null,
-//       };
-//     });
-
-//     res.status(200).json(result);
-//   } catch (error) {
-//     res.status(500).json({ message: "Error fetching schools", error: error.message });
-//   }
-// };
 
 
 // get all schools with principal details-> displayed on owner dashboard

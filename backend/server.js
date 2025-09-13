@@ -10,6 +10,9 @@ const auth = require("./routes/auth");
 const schoolRoutes = require("./routes/schoolRoutes");  
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const principalRoutes= require("./routes/principalRoutes");
+const teacherRoutes= require("./routes/teacherRoutes");
+
 
 
 app.use(cookieParser());
@@ -35,6 +38,10 @@ app.get('/',(req,res)=>{
 // Import routes
 app.use("/api/auth", auth);
 app.use("/api/school", schoolRoutes);
+app.use("/api/principal", principalRoutes);
+app.use("/api/teachers", teacherRoutes);
+
+// Start the server
 
 app.listen(port,()=>{
     console.log(`Example app listening on port ${port}`);

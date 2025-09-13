@@ -14,7 +14,7 @@ const insertOwner = async () => {
     // prevent duplicate owner creation
     const existingOwner = await User.findOne({ role: "owner" });
     if (existingOwner) {
-      console.log("⚠️ Owner already exists:", existingOwner.email);
+      console.log("Owner already exists:", existingOwner.email);
       mongoose.connection.close();
       return;
     }
