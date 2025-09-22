@@ -8,7 +8,7 @@ export default function ManageTeachersPage() {
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [viewingTeacher, setViewingTeacher] = useState(null);
 
-  // Fetch teachers from backend
+  // ✅ Fetch teachers from backend
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
@@ -32,13 +32,11 @@ export default function ManageTeachersPage() {
     fetchTeachers();
   }, []);
 
-  // Add new teacher locally
   const handleAddTeacher = (teacher) => {
     setTeachers([...teachers, teacher]);
     setIsModalOpen(false);
   };
 
-  // Update teacher locally
   const handleUpdateTeacher = (updatedTeacher) => {
     const updatedList = teachers.map((t) =>
       t._id === updatedTeacher._id ? updatedTeacher : t
@@ -48,7 +46,6 @@ export default function ManageTeachersPage() {
     setIsModalOpen(false);
   };
 
-  // Delete teacher
   const handleDelete = async (teacherId) => {
     if (!window.confirm("Are you sure you want to delete this teacher?")) return;
 
@@ -59,7 +56,6 @@ export default function ManageTeachersPage() {
       });
 
       if (!res.ok) throw new Error("Failed to delete teacher");
-
       setTeachers(teachers.filter((t) => t._id !== teacherId));
     } catch (error) {
       console.error("Error deleting teacher:", error);
@@ -68,6 +64,7 @@ export default function ManageTeachersPage() {
 
   return (
     <div className="p-8 text-black bg-white min-h-screen">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-blue-600">Manage Teachers</h1>
         <button
@@ -81,7 +78,7 @@ export default function ManageTeachersPage() {
         </button>
       </div>
 
-      {/* Teachers Table */}
+      {/* ✅ Teachers Table */}
       <div className="overflow-x-auto">
         <table className="w-full table-auto text-left bg-gray-100 rounded shadow">
           <thead>
@@ -89,22 +86,29 @@ export default function ManageTeachersPage() {
               <th className="p-4">Name</th>
               <th className="p-4">Email</th>
               <th className="p-4">Phone</th>
+              <th className="p-4">Class Level</th>
+              <th className="p-4">Subject</th>
               <th className="p-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {teachers.length === 0 ? (
               <tr>
-                <td colSpan="4" className="p-4 text-center text-gray-500">
+                <td colSpan="6" className="p-4 text-center text-gray-500">
                   No teachers added yet.
                 </td>
               </tr>
             ) : (
               teachers.map((teacher) => (
-                <tr key={teacher._id} className="border-t border-gray-300 hover:bg-gray-100">
-                  <td className="p-4">{teacher.name || teacher.fullName}</td>
+                <tr
+                  key={teacher._id}
+                  className="border-t border-gray-300 hover:bg-gray-100"
+                >
+                  <td className="p-4">{teacher.fullName}</td>
                   <td className="p-4">{teacher.email}</td>
                   <td className="p-4">{teacher.phone || "-"}</td>
+                  <td className="p-4">{teacher.classLevel || "-"}</td>
+                  <td className="p-4">{teacher.subject || "-"}</td>
                   <td className="p-4">
                     <button
                       onClick={() => setViewingTeacher(teacher)}
@@ -135,7 +139,7 @@ export default function ManageTeachersPage() {
         </table>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* ✅ Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-2xl shadow-lg relative">
@@ -162,43 +166,20 @@ export default function ManageTeachersPage() {
         </div>
       )}
 
-      {/* View Modal */}
+      {/* ✅ View Modal */}
       {viewingTeacher && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-md shadow-lg relative p-6">
             <h2 className="text-2xl font-semibold text-blue-700 mb-4">
               Teacher Details
             </h2>
-
-            <div className="space-y-2 text-gray-800">
-              <p><strong>Name:</strong> {viewingTeacher.fullName || viewingTeacher.name}</p>
+            <div className="space-y-3 text-gray-800">
+              <p><strong>Name:</strong> {viewingTeacher.fullName}</p>
               <p><strong>Email:</strong> {viewingTeacher.email}</p>
               <p><strong>Phone:</strong> {viewingTeacher.phone || "-"}</p>
-              
-              
-
-              {/* Optional Fields */}
-              {viewingTeacher.department && (
-                <p><strong>Department:</strong> {viewingTeacher.department}</p>
-              )}
-              {viewingTeacher.address && (
-                <p><strong>Address:</strong> {viewingTeacher.address}</p>
-              )}
-
-              {/* School Info */}
-              {viewingTeacher.school && typeof viewingTeacher.school === "object" ? (
-                <div className="mt-4 border-t pt-4">
-                  <h3 className="text-lg font-semibold text-blue-600 mb-2">School Info</h3>
-                  <p><strong>School Name:</strong> {viewingTeacher.school.name}</p>
-                  <p><strong>School Code:</strong> {viewingTeacher.school.code}</p>
-                  <p><strong>City:</strong> {viewingTeacher.school.city}</p>
-                  <p><strong>State:</strong> {viewingTeacher.school.state}</p>
-                </div>
-              ) : (
-                <p className="text-red-500">School info not available</p>
-              )}
+              <p><strong>Class Level:</strong> {viewingTeacher.classLevel || "-"}</p>
+              <p><strong>Subject:</strong> {viewingTeacher.subject || "-"}</p>
             </div>
-
             <button
               onClick={() => setViewingTeacher(null)}
               className="absolute top-3 right-3 text-gray-600 hover:text-white border border-gray-300 rounded-md text-xl px-3 py-1 hover:bg-red-500 transition-colors"

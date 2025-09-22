@@ -1,2 +1,18 @@
 @import "tailwindcss";
 
+/* In globals.css */
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+
+/* Custom dark variant */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Theme variables */
+ @theme {
+  --color-primary: #ffffff;
+  --color-primary-dark: #0d0d0d;
+} 
+
+

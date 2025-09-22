@@ -32,6 +32,18 @@ router.get("/ownerDashboard", authMiddleware(["owner"]), (req, res) => {
  // alert("owner dashboard accessed");
 });
 
+// Protect /principalDashboard/dashboard
+router.get("/principalDashboard/dashboard", authMiddleware(["principal"]), (req, res) => {
+  res.json({ message: "Welcome Principal!", user: req.user });
+ // alert("principal dashboard accessed");
+});
+
+// Protect /teacherDashboard
+router.get("/teacherDashboard", authMiddleware(["teacher"]), (req, res) => {
+  res.json({ message: "Welcome Teacher!", user: req.user });
+ // alert("teacher dashboard accessed");
+});
+
 router.post("/logout", logout);
 
 module.exports = router;

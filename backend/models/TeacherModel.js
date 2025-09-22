@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const teacherSchema = new mongoose.Schema(
   {
+    role: {
+      type: String,
+      default: "teacher",
+    },
     fullName: {
       type: String,
       required: true,
@@ -23,19 +27,30 @@ const teacherSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    // Link teacher to the principal who created them
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "PrincipalModel", // or "User" if you use a shared user model
+      ref: "PrincipalModel",
       required: true,
     },
-
-
-    school: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Schools", // Use your actual school collection name
+    // Link teacher to the school
+    // school: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Schools",
+    //   required: true,
+    // },
+    // New field: Class level (Primary, Middle, Secondary, Senior Secondary)
+    classLevel: {
+      type: String,
+      enum: ["Primary(1-5)", "Middle(6-8)", "Secondary(9-10)", "Senior(11-12)"],
       required: true,
     },
-
+    // New field: Subject taught by the teacher
+    subject: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   {
     timestamps: true,
