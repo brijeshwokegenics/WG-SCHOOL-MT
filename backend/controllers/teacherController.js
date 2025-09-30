@@ -10,21 +10,21 @@ const VALID_CLASS_LEVELS = [
   "Senior(11-12)",
 ];
 
-// ✅ Add a new teacher
+//  Add a new teacher
 exports.addTeacher = async (req, res) => {
   try {
     const { fullName, email, password, phone, classLevel, subject } = req.body;
 
     console.log("Req.user:", req.user);
 
-    // ✅ Ensure principal ID exists
+    //  Ensure principal ID exists
     if (!req.user?.id) {
       return res
         .status(401)
         .json({ message: "Unauthorized: Principal ID missing" });
     }
 
-    // ✅ Validate class level
+    //  Validate class level
     if (!VALID_CLASS_LEVELS.includes(classLevel)) {
       return res.status(400).json({
         message: `Invalid class level. Must be one of: ${VALID_CLASS_LEVELS.join(
@@ -37,13 +37,13 @@ exports.addTeacher = async (req, res) => {
       return res.status(400).json({ message: "Subject is required" });
     }
 
-    // ✅ Fetch the principal
+    // Fetch the principal
     const principal = await Principal.findById(req.user.id);
     if (!principal) {
       return res.status(404).json({ message: "Principal not found" });
     }
 
-    // ✅ Check for duplicate email
+    // Check for duplicate email
     const existing = await Teacher.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: "Email already exists." });
@@ -51,14 +51,14 @@ exports.addTeacher = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Create and save teacher
+    // Create and save teacher
     const newTeacher = new Teacher({
       fullName,
       email,
       password: hashedPassword,
       phone,
       createdBy: req.user.id,
-     
+      school: principal.school, // <--- auto linked
       classLevel,
       subject,
     });
@@ -77,7 +77,7 @@ exports.addTeacher = async (req, res) => {
   }
 };
 
-// ✅ Get all teachers for logged-in principal
+//  Get all teachers for logged-in principal
 exports.getAllTeachers = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -95,7 +95,7 @@ exports.getAllTeachers = async (req, res) => {
   }
 };
 
-// ✅ Get one teacher by ID
+//  Get one teacher by ID
 exports.getTeacherById = async (req, res) => {
   try {
     const teacher = await Teacher.findById(req.params.id);
@@ -110,7 +110,7 @@ exports.getTeacherById = async (req, res) => {
   }
 };
 
-// ✅ Update teacher
+//  Update teacher
 exports.updateTeacher = async (req, res) => {
   try {
     const { id } = req.params;
@@ -155,7 +155,7 @@ exports.updateTeacher = async (req, res) => {
   }
 };
 
-// ✅ Delete teacher
+//  Delete teacher
 exports.deleteTeacher = async (req, res) => {
   try {
     const { id } = req.params;

@@ -33,13 +33,14 @@ const teacherSchema = new mongoose.Schema(
       ref: "PrincipalModel",
       required: true,
     },
-    // Link teacher to the school
-    // school: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Schools",
-    //   required: true,
-    // },
-    // New field: Class level (Primary, Middle, Secondary, Senior Secondary)
+
+        // ✅ Link teacher to the school (added field)
+    school: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Schools", // must match your School model name
+      required: true,
+    },
+    
     classLevel: {
       type: String,
       enum: ["Primary(1-5)", "Middle(6-8)", "Secondary(9-10)", "Senior(11-12)"],

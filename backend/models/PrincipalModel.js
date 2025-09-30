@@ -7,8 +7,11 @@ const principalSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["owner", "principal", "teacher", "student"], required: true },
-  school: { type: mongoose.Schema.Types.ObjectId, ref: "Schools" }  //link to school
- // schoolCode: { type: String, required: true }, // link to school
+  school: { type: mongoose.Schema.Types.ObjectId, ref: "Schools" },  //link to school
+  schoolLogo: {
+    type: String, // will store the file path
+    default: "",
+  },
 }, { timestamps: true });
 
 //export default mongoose.model("User", userSchema);

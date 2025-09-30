@@ -5,6 +5,11 @@
 @import "swiper/css/navigation";
 @import "swiper/css/pagination";
 
+.section-box {
+  @apply bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 
+         dark:border-gray-700 p-8 md:p-10 transition-colors;
+}
+
 
 /* Custom dark variant */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -12,7 +17,7 @@
 /* Theme variables */
  @theme {
   --color-primary: #ffffff;
-  --color-primary-dark: #0d0d0d;
+  --color-primary-dark: #111827;
 } 
 
 

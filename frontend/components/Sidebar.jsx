@@ -4,7 +4,10 @@
 // import { usePathname, useRouter } from "next/navigation";
 // import { useEffect, useState } from "react";
 // import { FaBars, FaSignOutAlt } from "react-icons/fa";
-// import { MdDashboard, MdPeople, MdOutlineAnnouncement, MdOutlineSchool, MdOutlineAssessment } from "react-icons/md";
+// import { 
+//   MdDashboard, MdPeople, MdOutlineAnnouncement, 
+//   MdOutlineAssessment, MdOutlineSchool 
+// } from "react-icons/md";
 // import { HiUserGroup } from "react-icons/hi";
 
 // export default function Sidebar() {
@@ -14,6 +17,7 @@
 //   const [user, setUser] = useState(null);
 //   const [isCollapsed, setIsCollapsed] = useState(false);
 
+//   // ✅ Fetch user info (to get role)
 //   const fetchUser = async () => {
 //     try {
 //       const res = await fetch("http://localhost:4000/api/auth", {
@@ -33,30 +37,29 @@
 
 //   useEffect(() => {
 //     fetchUser();
-
 //     const handleAuthChange = () => fetchUser();
 //     window.addEventListener("authChanged", handleAuthChange);
-
-//     return () => {
-//       window.removeEventListener("authChanged", handleAuthChange);
-//     };
+//     return () => window.removeEventListener("authChanged", handleAuthChange);
 //   }, []);
 
-//   const handleLogout = async () => {
-//     try {
-//       await fetch("http://localhost:4000/api/auth/logout", {
-//         method: "POST",
-//         credentials: "include",
-//       });
-//       setUser(null);
-//       window.dispatchEvent(new Event("authChanged"));
-//       router.push("/login");
-//     } catch (err) {
-//       console.error("Logout error:", err);
-//     }
-//   };
 
-//   const links = [
+//   //incase in futher we need logout feature in sidebar
+//   // const handleLogout = async () => {
+//   //   try {
+//   //     await fetch("http://localhost:4000/api/auth/logout", {
+//   //       method: "POST",
+//   //       credentials: "include",
+//   //     });
+//   //     setUser(null);
+//   //     window.dispatchEvent(new Event("authChanged"));
+//   //     router.push("/login");
+//   //   } catch (err) {
+//   //     console.error("Logout error:", err);
+//   //   }
+//   // };
+
+//   // ✅ Define links based on role
+//   const principalLinks = [
 //     { label: "Dashboard", href: "/principalDashboard/dashboard", icon: <MdDashboard /> },
 //     { label: "Manage Teachers", href: "/principalDashboard/manageTeachers", icon: <HiUserGroup /> },
 //     { label: "Manage Students", href: "/principalDashboard/manageStudents", icon: <MdPeople /> },
@@ -65,17 +68,28 @@
 //     { label: "Announcements", href: "/principalDashboard/principalAnnouncements", icon: <MdOutlineAnnouncement /> },
 //   ];
 
+//   const teacherLinks = [
+//     { label: "Dashboard", href: "/teacher/dashboard", icon: <MdDashboard /> },
+//     { label: "Announcements", href: "/teacher/announcements", icon: <MdOutlineAnnouncement /> },
+//     { label: "Add Student", href: "/teacher/addStudent", icon: <MdPeople /> },
+//     { label: "Attendance", href: "/teacher/attendance", icon: <MdOutlineAssessment /> },
+//   ];
+
+//   const links = user?.role === "principal" ? principalLinks : teacherLinks;
+
 //   return (
 //     <aside
 //       className={`bg-gray-900 text-white transition-all duration-300 ease-in-out min-h-screen flex flex-col justify-between py-6 px-4 shadow-lg ${
 //         isCollapsed ? "w-20" : "w-64"
 //       }`}
 //     >
-//       {/* Top: Brand + Toggle */}
+//       {/* 🔹 Top Section: Brand + Toggle */}
 //       <div>
 //         <div className="flex justify-between items-center mb-8">
 //           {!isCollapsed && (
-//             <h2 className="text-xl font-bold tracking-wide text-white">Principal Panel</h2>
+//             <h2 className="text-xl font-bold tracking-wide text-white">
+//               {user?.role === "teacher" ? "Teacher Panel" : "Principal Panel"}
+//             </h2>
 //           )}
 //           <button
 //             onClick={() => setIsCollapsed((prev) => !prev)}
@@ -86,7 +100,7 @@
 //           </button>
 //         </div>
 
-//         {/* Navigation */}
+//         {/* 🔹 Navigation Links */}
 //         <nav className="space-y-1">
 //           {links.map(({ href, label, icon }) => (
 //             <Link
@@ -105,8 +119,8 @@
 //         </nav>
 //       </div>
 
-//       {/* Bottom: Logout */}
-//     {/*  {user && (
+//       {/* 🔹 Bottom: Logout */}
+//       {/* {user && (
 //         <div className="mt-10 px-2">
 //           <button
 //             onClick={handleLogout}
@@ -116,12 +130,14 @@
 //             {!isCollapsed && "Logout"}
 //           </button>
 //         </div>
-//       )}
-//         */}
+//       )} */}
 //     </aside>
 //   );
 // }
-//////////////////////////
+
+
+
+////////////////
 
 
 "use client";
@@ -130,9 +146,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaBars, FaSignOutAlt } from "react-icons/fa";
-import { 
-  MdDashboard, MdPeople, MdOutlineAnnouncement, 
-  MdOutlineAssessment, MdOutlineSchool 
+import {
+  MdDashboard,
+  MdPeople,
+  MdOutlineAnnouncement,
+  MdOutlineAssessment,
 } from "react-icons/md";
 import { HiUserGroup } from "react-icons/hi";
 
@@ -143,7 +161,7 @@ export default function Sidebar() {
   const [user, setUser] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // ✅ Fetch user info (to get role)
+  // Fetch user info (to get role)
   const fetchUser = async () => {
     try {
       const res = await fetch("http://localhost:4000/api/auth", {
@@ -168,21 +186,36 @@ export default function Sidebar() {
     return () => window.removeEventListener("authChanged", handleAuthChange);
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:4000/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      setUser(null);
-      window.dispatchEvent(new Event("authChanged"));
-      router.push("/login");
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
-  };
+  //  Auto-collapse sidebar on small screens
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
 
-  // ✅ Define links based on role
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // const handleLogout = async () => {
+  //   try {
+  //     await fetch("http://localhost:4000/api/auth/logout", {
+  //       method: "POST",
+  //       credentials: "include",
+  //     });
+  //     setUser(null);
+  //     window.dispatchEvent(new Event("authChanged"));
+  //     router.push("/login");
+  //   } catch (err) {
+  //     console.error("Logout error:", err);
+  //   }
+  // };
+
+  // Define links based on role
   const principalLinks = [
     { label: "Dashboard", href: "/principalDashboard/dashboard", icon: <MdDashboard /> },
     { label: "Manage Teachers", href: "/principalDashboard/manageTeachers", icon: <HiUserGroup /> },
@@ -193,31 +226,55 @@ export default function Sidebar() {
   ];
 
   const teacherLinks = [
-    { label: "Dashboard", href: "/teacher/dashboard", icon: <MdDashboard /> },
-    { label: "Announcements", href: "/teacher/announcements", icon: <MdOutlineAnnouncement /> },
-    { label: "Add Student", href: "/teacher/addStudent", icon: <MdPeople /> },
+    { label: "Dashboard", href: "/teacherDashboard/dashboard", icon: <MdDashboard /> },
+    { label: "Announcements", href: "/teacherDashboard/viewAnnouncements", icon: <MdOutlineAnnouncement /> },
+    { label: "Manage Student", href: "/teacherDashboard/manageStudent", icon: <MdPeople /> },
     { label: "Attendance", href: "/teacher/attendance", icon: <MdOutlineAssessment /> },
   ];
 
-  const links = user?.role === "principal" ? principalLinks : teacherLinks;
+  const studentLinks = [
+    { label: "Dashboard", href: "/studentDashboard/dashboard", icon: <MdDashboard /> },
+    { label: "Announcements", href: "/teacherDashboard/viewAnnouncements", icon: <MdOutlineAnnouncement /> },
+    { label: "Show Tests", href: "/teacherDashboard/manageStudent", icon: <MdPeople /> },
+    { label: "View Results", href: "/teacherDashboard/manageStudent", icon: <MdPeople /> },
+    { label: "Attendance", href: "/teacher/attendance", icon: <MdOutlineAssessment /> },
+  ];
+
+  //const links = user?.role === "principal" ? principalLinks : teacherLinks;
+
+  const links =
+    user?.role === "principal"
+      ? principalLinks
+      : user?.role === "student"
+        ? studentLinks
+        : teacherLinks;
+
 
   return (
     <aside
-      className={`bg-gray-900 text-white transition-all duration-300 ease-in-out min-h-screen flex flex-col justify-between py-6 px-4 shadow-lg ${
-        isCollapsed ? "w-20" : "w-64"
-      }`}
+      className={`transition-all duration-300 ease-in-out min-h-screen flex flex-col justify-between py-6 px-4 shadow-lg
+        ${isCollapsed ? "w-20" : "w-64"}
+        bg-gray-200 text-black
+        dark:bg-gray-900 dark:text-white
+      `}
     >
-      {/* 🔹 Top Section: Brand + Toggle */}
+      {/* Top Section: Brand + Toggle */}
       <div>
         <div className="flex justify-between items-center mb-8">
           {!isCollapsed && (
-            <h2 className="text-xl font-bold tracking-wide text-white">
-              {user?.role === "teacher" ? "Teacher Panel" : "Principal Panel"}
+            <h2 className="text-xl font-bold tracking-wide text-black dark:text-white">
+              {/* {user?.role === "teacher" ? "Teacher Panel" : "Principal Panel"} */}
+              {user?.role === "teacher"
+                ? "Teacher Panel"
+                : user?.role === "student"
+                  ? "Student Panel"
+                  : "Principal Panel"}
+
             </h2>
           )}
           <button
             onClick={() => setIsCollapsed((prev) => !prev)}
-            className="text-white hover:text-blue-400 text-xl"
+            className="text-black dark:text-white hover:text-blue-500 text-xl"
             aria-label="Toggle Sidebar"
           >
             <FaBars />
@@ -230,11 +287,10 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition ${
-                pathname === href
+              className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm font-medium transition ${pathname === href
                   ? "bg-blue-600 text-white"
-                  : "text-gray-300 hover:bg-gray-800"
-              }`}
+                  : "text-black hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                }`}
             >
               <span className="text-lg">{icon}</span>
               {!isCollapsed && <span>{label}</span>}
@@ -244,7 +300,7 @@ export default function Sidebar() {
       </div>
 
       {/* 🔹 Bottom: Logout */}
-      {user && (
+      {/* {user && (
         <div className="mt-10 px-2">
           <button
             onClick={handleLogout}
@@ -254,8 +310,9 @@ export default function Sidebar() {
             {!isCollapsed && "Logout"}
           </button>
         </div>
-      )}
+      )} */}
     </aside>
   );
 }
+
 

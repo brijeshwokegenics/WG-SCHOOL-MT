@@ -1,51 +1,42 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import AddStudentForm from '../AddStudentForm';
+// import CsvUpload from '../CsvUpload';
+import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 
 export default function ManageStudentsPage() {
   const [students, setStudents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', grade: '' });
-  const [isEditing, setIsEditing] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleOpenModal = () => {
+    setEditingStudent(null);
     setIsModalOpen(true);
-    setFormData({ name: '', email: '', grade: '' });
-    setIsEditing(false);
   };
 
   const handleCloseModal = () => {
+    setEditingStudent(null);
     setIsModalOpen(false);
-    setFormData({ name: '', email: '', grade: '' });
-    setIsEditing(false);
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.grade) {
-      alert('Please fill all fields');
-      return;
-    }
-
-    if (isEditing) {
+  const handleAddOrUpdate = (student) => {
+    if (editingStudent !== null) {
+      // Update existing student
       const updated = [...students];
-      updated[editIndex] = formData;
+      updated[editingStudent] = student;
       setStudents(updated);
     } else {
-      setStudents([...students, formData]);
+      // Add new student
+      setStudents([...students, student]);
     }
-
     handleCloseModal();
   };
 
   const handleEdit = (index) => {
-    setFormData(students[index]);
-    setIsEditing(true);
-    setEditIndex(index);
+    setEditingStudent(index);
     setIsModalOpen(true);
   };
 
@@ -54,25 +45,67 @@ export default function ManageStudentsPage() {
     setStudents(updated);
   };
 
+  // Fetch all students
+  const fetchStudents = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('http://localhost:4000/api/student/all-student', {
+        method: 'GET',
+        credentials: 'include', // if you need cookies/auth
+      });
+      const data = await res.json();
+      console.log("fetching student on principal dashboard...", data)
+
+      if (!res.ok) {
+        setError(data.message || 'Failed to fetch students');
+        setLoading(false);
+        return;
+      }
+
+      setStudents(data.students || data); // adjust depending on backend response
+    } catch (err) {
+      console.error('Error fetching students:', err);
+      setError('Network error while fetching students');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
   return (
-    <div className="p-8 text-black bg-white min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-blue-600">Manage Students</h1>
-        <button
-          onClick={handleOpenModal}
-          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white"
-        >
-          + Add Student
-        </button>
+    <div className="p-6 min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">Manage Students</h1>
+        <div className="flex gap-3">
+          {/* CSV Upload */}
+          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white transition">
+            Upload CSV
+          </button>
+
+          <button
+            onClick={handleOpenModal}
+            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white transition"
+          >
+            + Add Student
+          </button>
+        </div>
       </div>
 
+      {loading && <p className="mb-4 text-gray-500 dark:text-gray-400">Loading students...</p>}
+      {error && <p className="mb-4 text-red-500 dark:text-red-400">{error}</p>}
+
       {/* Student Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto text-left bg-gray-100 rounded shadow">
+      <div className="overflow-x-auto rounded-lg shadow">
+        <table className="w-full table-auto text-left bg-gray-100 dark:bg-gray-800">
           <thead>
-            <tr className="bg-gray-200 text-blue-700">
+            <tr className="bg-gray-200 dark:bg-gray-700 text-blue-700 dark:text-blue-300">
               <th className="p-4">Name</th>
-              <th className="p-4">Email</th>
+              <th className="p-4">Roll No.</th>
               <th className="p-4">Grade</th>
               <th className="p-4">Actions</th>
             </tr>
@@ -80,19 +113,19 @@ export default function ManageStudentsPage() {
           <tbody>
             {students.length === 0 ? (
               <tr>
-                <td colSpan="4" className="p-4 text-center text-gray-500">
-                  No students added yet.
+                <td colSpan="4" className="p-4 text-center text-gray-500 dark:text-gray-400">
+                  No students found.
                 </td>
               </tr>
             ) : (
               students.map((student, index) => (
                 <tr
                   key={index}
-                  className="border-t border-gray-300 hover:bg-gray-100"
+                  className="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 >
-                  <td className="p-4">{student.name}</td>
-                  <td className="p-4">{student.email}</td>
-                  <td className="p-4">{student.grade}</td>
+                  <td className="p-4">{student.fullName}</td>
+                  <td className="p-4">{student.rollNumber || '-'}</td>
+                  <td className="p-4">{student.gradeOrClass || '-'}</td>
                   <td className="p-4 space-x-2">
                     <button
                       onClick={() => handleEdit(index)}
@@ -116,70 +149,29 @@ export default function ManageStudentsPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-black">
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-2 right-3 text-gray-600 hover:text-gray-900 text-xl"
-            >
-              &times;
-            </button>
-            <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-              {isEditing ? 'Edit Student' : 'Add Student'}
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm mb-1">Name *</label>
-                <input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full border border-blue-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Student name"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Email *</label>
-                <input
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full border border-blue-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="student@example.com"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">Grade / Class *</label>
-                <input
-                  name="grade"
-                  value={formData.grade}
-                  onChange={handleChange}
-                  className="w-full border border-blue-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g. 9A or Grade 10"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 mt-4">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg w-full max-w-xl relative">
+            <div className="p-6 overflow-y-auto max-h-[80vh]">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                  {editingStudent !== null ? 'Edit Student' : 'Add Student'}
+                </h2>
                 <button
-                  type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 border border-blue-700 text-blue-700 rounded hover:bg-blue-100"
+                  className="text-gray-600 dark:text-gray-300 hover:text-white border border-gray-300 dark:border-gray-600 rounded-md text-xl px-3 py-1 hover:bg-red-500 transition-colors"
+                  aria-label="Close modal"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded"
-                >
-                  {isEditing ? 'Update' : 'Add'} Student
+                  &times;
                 </button>
               </div>
-            </form>
+
+              {/* Form */}
+              <AddStudentForm
+                initialData={editingStudent !== null ? students[editingStudent] : null}
+                onAdded={handleAddOrUpdate}
+              />
+            </div>
           </div>
         </div>
       )}

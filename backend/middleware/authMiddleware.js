@@ -3,7 +3,9 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = (roles = []) => {
   return (req, res, next) => {
     try {
+        //checking wheather middleware is working
         console.log("auth middleware called");
+
      // const token = req.cookies?.token;
       const token = req.cookies?.token || req.headers["authorization"]?.split(" ")[1];
       
@@ -26,3 +28,6 @@ const authMiddleware = (roles = []) => {
 };
 
 module.exports = authMiddleware;
+
+///////////
+

@@ -1,5 +1,4 @@
-const express = require("express");
-const router = express.Router();
+const express = require("express")
 const PrincipalModel = require("../models/PrincipalModel");
 
 exports.getPrincipalDetails = async (req, res) => {

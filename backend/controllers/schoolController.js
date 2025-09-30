@@ -45,7 +45,7 @@ exports.addSchool = async (req, res) => {
       email: principalEmail,
       password: hashedPassword,
       role: "principal",
-      school: savedSchool._id, // ✅ link here
+      school: savedSchool._id, //  link here
      // schoolCode: schoolCode, // link principal to the school
     });
     await principal.save();

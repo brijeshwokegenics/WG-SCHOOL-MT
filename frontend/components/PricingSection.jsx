@@ -23,7 +23,7 @@ export default function PricingSection() {
   ];
 
   return (
-    <section className="py-10 px-4 bg-gray-50 dark:bg-gray-900">
+    <section className="py-1  px-4 bg-primary dark:bg-gray-900">
       <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
         Pricing Plans
       </h2>

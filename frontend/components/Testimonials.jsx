@@ -1,7 +1,7 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
@@ -40,17 +40,17 @@ export default function Testimonials() {
   ];
 
   return (
-    <section className="py-12 px-4 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <h2 className="text-2xl font-bold text-center mb-12 text-gray-900 dark:text-white tracking-tight">
-        What Teachers Say
+    <section className="py-5 px-4 dark:from-gray-900 dark:to-gray-800">
+      
+       <h2 className="text-2xl font-bold text-center mb-12 text-gray-900 dark:text-white tracking-tight">
+         What Teachers Say
       </h2>
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto mb-3">
         <Swiper
           modules={[Autoplay]}
           spaceBetween={30}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          
+          autoplay={{ delay: 4000, disableOnInteraction: false }}
           loop={true}
           breakpoints={{
             0: {
@@ -74,23 +74,25 @@ export default function Testimonials() {
 
             return (
               <SwiperSlide key={i}>
-                <div className="group w-full max-w-sm h-[240px] mx-auto flex flex-col justify-between p-6 bg-white dark:bg-gray-700 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 dark:border-gray-600">
-                  {/* Profile Initials */}
-                  <div className="w-12 h-12 mx-auto rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:bg-blue-700 transition-colors duration-300">
+                <div className="group w-full max-w-sm h-[260px] mx-auto flex flex-col justify-between p-6 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-gray-500 dark:border-gray-700">
+                  {/* Avatar Initials */}
+                  <div className="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center font-bold text-base shadow-md group-hover:scale-110 transition-transform duration-300">
                     {initials}
                   </div>
 
                   {/* Quote */}
-                  <p className="italic text-gray-700 dark:text-gray-200 text-sm leading-relaxed text-center flex-1 mt-3">
+                  <p className="italic text-gray-700 dark:text-gray-300 text-[15px] leading-relaxed text-center mt-4">
                     “{t.quote}”
                   </p>
 
                   {/* Name & Role */}
-                  <div className="mt-4 text-center">
+                  <div className="mt-6 text-center">
                     <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
                       {t.name}
                     </h4>
-                    <span className="text-[10px] text-gray-500">{t.role}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {t.role}
+                    </span>
                   </div>
                 </div>
               </SwiperSlide>
@@ -98,8 +100,8 @@ export default function Testimonials() {
           })}
         </Swiper>
 
-        {/* Pagination dots */}
-        <div className="custom-pagination mt-6 flex justify-center gap-2" />
+        {/* Pagination Placeholder (optional, use Swiper's Pagination if desired) */}
+        {/* You can implement Swiper's built-in pagination here if needed */}
       </div>
     </section>
   );

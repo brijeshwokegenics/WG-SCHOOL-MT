@@ -1,7 +1,7 @@
 //this is the main entry point of the backend server
 
 const express=require('express');
-const app=express()
+
 const dotenv=require('dotenv'); 
 dotenv.config();
 const port=process.env.PORT || 5000;
@@ -12,12 +12,16 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const principalRoutes= require("./routes/principalRoutes");
 const teacherRoutes= require("./routes/teacherRoutes");
+const uploadRoutes=require("./routes/uploadRoutes");
+const announcementRoutes= require("./routes/announcementRoutes")
+const teacherDetailsRoutes=require("./routes/teacherDetailsRoutes");
+const showAnnouncementRoute=require("./routes/showAnnouncementRoute");
+const studentRoutes=require("./routes/studentRoutes");
 
-
+const app=express()
 
 app.use(cookieParser());
 
-// app.use(cors());
 
 app.use(
   cors({
@@ -37,9 +41,40 @@ app.get('/',(req,res)=>{
 
 // Import routes
 app.use("/api/auth", auth);
+
+//app.use("/api/forgot-password", auth);
+
+//owner->Creating schools and  CRUD operations on school
 app.use("/api/school", schoolRoutes);
+
+//display principal and school details on principal dashboard
 app.use("/api/principal", principalRoutes);
+
+// Serve static files (logos)
+app.use("/uploads", express.static("uploads"), principalRoutes);
+
+
+//principal adding teachers and performing all CRUD opeartion
 app.use("/api/teachers", teacherRoutes);
+
+//principal or teacher both can create student
+app.use("/api/student", studentRoutes);
+
+//display teacher and school details on teacher dashboard
+app.use("/api/teacherDetails", teacherDetailsRoutes);
+
+
+//csv file upload route
+app.use("/api/upload",uploadRoutes);
+
+//principal's announcement route
+app.use("/api/announcement",announcementRoutes);
+
+//view announcement for teacher and student as notification
+app.use("/api/showAnnouncement", showAnnouncementRoute)
+
+
+
 
 // Start the server
 

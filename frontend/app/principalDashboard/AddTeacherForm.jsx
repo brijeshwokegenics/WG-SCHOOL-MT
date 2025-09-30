@@ -33,7 +33,6 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting form:", form);
     setError("");
     setSuccessMsg("");
 
@@ -53,7 +52,6 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
       });
 
       const data = await res.json();
-      console.log("Add teacher response:", data);
       if (!res.ok) {
         setError(data.message || "Failed to add teacher. Please try again.");
         setLoading(false);
@@ -79,16 +77,18 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl p-8 max-h-screen">
-      <p className="text-sm text-gray-700 mb-8">
-        Create teacher account and assign class level and subject. All fields marked * are required.
+    <div className="max-w-2xl w-full mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-xl p-6 sm:p-8 overflow-hidden">
+      <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
+        Create a teacher account and assign class level and subject.
+        <br className="hidden sm:block" />
+        All fields marked <span className="text-red-500">*</span> are required.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Full Name */}
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-900 mb-2">
-            Full name *
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
+            Full name <span className="text-red-500">*</span>
           </label>
           <input
             id="fullName"
@@ -97,18 +97,20 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
             onChange={handleChange}
             type="text"
             placeholder="e.g. Abhishek Gupta"
-            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
         {/* Login Credentials */}
-        <div className="border border-gray-300 rounded-lg p-6 bg-gray-50">
-          <h4 className="text-lg font-semibold text-black mb-4">Teacher Login Credentials</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 bg-gray-50 dark:bg-gray-800">
+          <h4 className="text-base sm:text-lg font-semibold text-black dark:text-white mb-4">
+            Teacher Login Credentials
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-                Email *
+              <label htmlFor="email" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 id="email"
@@ -117,14 +119,14 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
                 onChange={handleChange}
                 type="email"
                 placeholder="teacher@example.com"
-                className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900 mb-2">
-                Password *
+              <label htmlFor="password" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
+                Password <span className="text-red-500">*</span>
               </label>
               <input
                 id="password"
@@ -133,7 +135,7 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
                 onChange={handleChange}
                 type="password"
                 placeholder="At least 6 characters"
-                className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -142,7 +144,7 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
 
         {/* Phone */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-900 mb-2">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
             Phone
           </label>
           <input
@@ -152,21 +154,21 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
             onChange={handleChange}
             type="tel"
             placeholder="+91 9XXXXXXXXX"
-            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Class Level Dropdown */}
+        {/* Class Level */}
         <div>
-          <label htmlFor="classLevel" className="block text-sm font-medium text-gray-900 mb-2">
-            Class Level *
+          <label htmlFor="classLevel" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
+            Class Level <span className="text-red-500">*</span>
           </label>
           <select
             id="classLevel"
             name="classLevel"
             value={form.classLevel}
             onChange={handleChange}
-            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
             <option value="">-- Select Class Level --</option>
@@ -179,8 +181,8 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
 
         {/* Subject */}
         <div>
-          <label htmlFor="subject" className="block text-sm font-medium text-gray-900 mb-2">
-            Subject *
+          <label htmlFor="subject" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
+            Subject <span className="text-red-500">*</span>
           </label>
           <input
             id="subject"
@@ -189,25 +191,33 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
             onChange={handleChange}
             type="text"
             placeholder="e.g. Mathematics"
-            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
 
-        {/* Status messages */}
-        {error && <div className="p-3 bg-red-100 text-red-700 border border-red-300 rounded">{error}</div>}
+        {/* Error & Success Messages */}
+        {error && (
+          <div className="p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-600 rounded text-sm">
+            {error}
+          </div>
+        )}
         {successMsg && (
-          <div className="p-3 bg-green-100 text-green-700 border border-green-300 rounded">{successMsg}</div>
+          <div className="p-3 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-600 rounded text-sm">
+            {successMsg}
+          </div>
         )}
 
-        {/* Actions */}
-        <div className="flex items-center justify-between gap-4">
+        {/* Submit & Reset */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
           <button
             type="submit"
             disabled={loading}
             className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white ${
-              loading ? "bg-blue-300" : "bg-blue-700 hover:bg-blue-800"
-            } transition`}
+              loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-700 hover:bg-blue-800"
+            } transition w-full sm:w-auto justify-center`}
           >
             {loading ? (
               <>
@@ -234,7 +244,7 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
                 subject: "",
               })
             }
-            className="px-5 py-3 rounded-lg border border-blue-700 text-blue-700 hover:bg-blue-100 transition"
+            className="w-full sm:w-auto px-6 py-3 rounded-lg border border-blue-700 text-blue-700 dark:text-blue-300 dark:border-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 transition"
           >
             Reset
           </button>
