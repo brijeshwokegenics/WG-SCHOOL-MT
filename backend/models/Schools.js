@@ -10,6 +10,7 @@ const schoolSchema = new mongoose.Schema({
   pincode: String,
   phone: String,
   email: String,
+  schoolLogo: { type: String }, //store Cloudinary URL here
 }, { timestamps: true });
 
 // Make a "virtual" relationship for populate
@@ -25,5 +26,4 @@ schoolSchema.set("toObject", { virtuals: true });
 schoolSchema.set("toJSON", { virtuals: true });
 
 ///////////////////////
-
 module.exports = mongoose.model("Schools", schoolSchema);

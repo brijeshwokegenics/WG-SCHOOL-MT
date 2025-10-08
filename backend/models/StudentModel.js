@@ -3,20 +3,16 @@ const mongoose = require("mongoose");
 
 const studentSchema = new mongoose.Schema(
     {
-         role: {
-      type: String,
-      default: "student",
-    },
+        role: {
+            type: String,
+            default: "student",
+        },
         fullName: {
             type: String,
             required: [true, "Full name is required"],
             trim: true,
         },
 
-        phone: {
-            type: String,
-            trim: true,
-        },
         //roll number and dob are login credientials for student
 
         //roll number used as email for login
@@ -32,9 +28,16 @@ const studentSchema = new mongoose.Schema(
             required: [true, "Date of birth is required"],
         },
 
-        gradeOrClass: {
+        classLevel: {
             type: String,
-            trim: true,
+            required: true,
+            enum: Array.from({ length: 12 }, (_, i) => i + 1), // Validates class 1 to 12
+        },
+
+        section: {
+            type: String,
+            uppercase: true,
+            maxlength: 2,
         },
 
         // Link student to the school (added field)

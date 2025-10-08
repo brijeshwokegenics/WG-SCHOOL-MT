@@ -145,7 +145,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaBars, FaSignOutAlt } from "react-icons/fa";
+import { FaArrowAltCircleLeft, FaArrowAltCircleRight, FaBars, FaSignOutAlt } from "react-icons/fa";
 import {
   MdDashboard,
   MdPeople,
@@ -153,6 +153,9 @@ import {
   MdOutlineAssessment,
 } from "react-icons/md";
 import { HiUserGroup } from "react-icons/hi";
+import { PiExam } from "react-icons/pi";
+import { MdCreditScore } from "react-icons/md";
+import { TbReportAnalytics } from "react-icons/tb";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -220,8 +223,7 @@ export default function Sidebar() {
     { label: "Dashboard", href: "/principalDashboard/dashboard", icon: <MdDashboard /> },
     { label: "Manage Teachers", href: "/principalDashboard/manageTeachers", icon: <HiUserGroup /> },
     { label: "Manage Students", href: "/principalDashboard/manageStudents", icon: <MdPeople /> },
-    { label: "View Attendance", href: "/principal/attendance", icon: <MdOutlineAssessment /> },
-    { label: "Student Results", href: "/principal/results", icon: <MdOutlineAssessment /> },
+        { label: "Student Results", href: "/principal/results", icon: <MdOutlineAssessment /> },
     { label: "Announcements", href: "/principalDashboard/principalAnnouncements", icon: <MdOutlineAnnouncement /> },
   ];
 
@@ -229,18 +231,19 @@ export default function Sidebar() {
     { label: "Dashboard", href: "/teacherDashboard/dashboard", icon: <MdDashboard /> },
     { label: "Announcements", href: "/teacherDashboard/viewAnnouncements", icon: <MdOutlineAnnouncement /> },
     { label: "Manage Student", href: "/teacherDashboard/manageStudent", icon: <MdPeople /> },
-    { label: "Attendance", href: "/teacher/attendance", icon: <MdOutlineAssessment /> },
+    { label: "Create Test", href: "/teacherDashboard/createTest", icon: <PiExam />},
+    { label: "Result", href: "/teacherDashboard/result", icon: <TbReportAnalytics />},
   ];
 
   const studentLinks = [
     { label: "Dashboard", href: "/studentDashboard/dashboard", icon: <MdDashboard /> },
-    { label: "Announcements", href: "/teacherDashboard/viewAnnouncements", icon: <MdOutlineAnnouncement /> },
-    { label: "Show Tests", href: "/teacherDashboard/manageStudent", icon: <MdPeople /> },
-    { label: "View Results", href: "/teacherDashboard/manageStudent", icon: <MdPeople /> },
-    { label: "Attendance", href: "/teacher/attendance", icon: <MdOutlineAssessment /> },
+    { label: "Announcements", href: "/studentDashboard/viewAnnouncement", icon: <MdOutlineAnnouncement /> },
+    { label: "Show Tests", href: "/studentDashboard/showTest", icon: <PiExam /> },
+    { label: "View Results", href: "/studentDashboard/viewResult", icon: <MdCreditScore /> },
+   
   ];
 
-  //const links = user?.role === "principal" ? principalLinks : teacherLinks;
+  
 
   const links =
     user?.role === "principal"
@@ -274,10 +277,11 @@ export default function Sidebar() {
           )}
           <button
             onClick={() => setIsCollapsed((prev) => !prev)}
-            className="text-black dark:text-white hover:text-blue-500 text-xl"
+            className="text-black dark:text-white hover:text-blue-500 text-3xl"
             aria-label="Toggle Sidebar"
           >
-            <FaBars />
+            {/* <FaBars /> */}
+            {isCollapsed ? <FaArrowAltCircleRight /> : <FaArrowAltCircleLeft />}
           </button>
         </div>
 

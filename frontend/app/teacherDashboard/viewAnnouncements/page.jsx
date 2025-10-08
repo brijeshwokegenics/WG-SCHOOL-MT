@@ -7,7 +7,6 @@ export default function ViewAnnouncement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Format date nicely
   const formatDate = (date) =>
     new Date(date).toLocaleString("en-IN", {
       day: "2-digit",
@@ -40,48 +39,50 @@ export default function ViewAnnouncement() {
     fetchAnnouncements();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="p-6 text-center text-gray-500 dark:text-gray-400">
-        Loading announcements...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 text-center text-red-600 dark:text-red-400">
-        {error}
-      </div>
-    );
-  }
-
-  if (announcements.length === 0) {
-    return (
-      <div className="p-6 text-center text-gray-500 dark:text-gray-400">
-        No announcements yet.
-      </div>
-    );
-  }
-
   return (
-    <div className="p-6 md:p-10 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
-      <h1 className="text-2xl md:text-3xl font-bold text-blue-700 dark:text-blue-400 mb-6">
-        Principal's Announcements
-      </h1>
+    <div className="p-4 md:p-8 bg-white dark:bg-gray-900 min-h-screen text-black dark:text-white transition-colors duration-300">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">
+          Principal's Announcements for Teachers
+        </h1>
+      </div>
+
+
+      {/* Loading */}
+      {loading && (
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          Loading announcements...
+        </p>
+      )}
+
+      {/* Error */}
+      {error && (
+        <p className="text-center text-red-600 dark:text-red-400">{error}</p>
+      )}
+
+      {/* No announcements */}
+      {!loading && announcements.length === 0 && !error && (
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          No announcements yet.
+        </p>
+      )}
+
+      {/* Announcements List */}
       <div className="space-y-4">
-        {announcements.map((a) => (
+        {announcements.map((announcement) => (
           <div
-            key={a._id}
-            className="bg-white dark:bg-gray-800 p-5 rounded shadow-md flex flex-col md:flex-row justify-between items-start md:items-center transition hover:shadow-lg"
+            key={announcement._id}
+            className="bg-gray-100 dark:bg-gray-800 p-5 rounded shadow flex flex-col md:flex-row justify-between items-start md:items-center"
           >
             <div className="mb-3 md:mb-0 w-full md:w-auto">
               <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-400">
-                {a.title}
+                {announcement.title}
               </h3>
-              <p className="text-gray-700 dark:text-gray-200 mt-1">{a.body}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Announced on: {formatDate(a.createdAt)}
+              <p className="text-gray-700 dark:text-gray-200 mt-2">
+                {announcement.body}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                Announced on: {formatDate(announcement.createdAt)}
               </p>
             </div>
           </div>

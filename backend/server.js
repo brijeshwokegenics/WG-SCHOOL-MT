@@ -17,6 +17,8 @@ const announcementRoutes= require("./routes/announcementRoutes")
 const teacherDetailsRoutes=require("./routes/teacherDetailsRoutes");
 const showAnnouncementRoute=require("./routes/showAnnouncementRoute");
 const studentRoutes=require("./routes/studentRoutes");
+const uploadLogoRoutes=require("./routes/uploadLogoRoutes");
+const testRoutes=require("./routes/testRoutes");
 
 const app=express()
 
@@ -63,9 +65,14 @@ app.use("/api/student", studentRoutes);
 //display teacher and school details on teacher dashboard
 app.use("/api/teacherDetails", teacherDetailsRoutes);
 
+//teahers creating tests
+app.use("/api/test", testRoutes);
 
 //csv file upload route
 app.use("/api/upload",uploadRoutes);
+
+//upload school logo on principal's dashboard
+app.use("/api/upload-logo",uploadLogoRoutes)
 
 //principal's announcement route
 app.use("/api/announcement",announcementRoutes);

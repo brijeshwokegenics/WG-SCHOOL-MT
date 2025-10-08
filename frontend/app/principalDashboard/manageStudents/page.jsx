@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import AddStudentForm from '../AddStudentForm';
 // import CsvUpload from '../CsvUpload';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import Pagination from '@/components/Pagination';
+
 
 export default function ManageStudentsPage() {
   const [students, setStudents] = useState([]);
@@ -11,6 +14,9 @@ export default function ManageStudentsPage() {
   const [editingStudent, setEditingStudent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+const pageSize = 10; // number of teachers per page
+
 
   const handleOpenModal = () => {
     setEditingStudent(null);
@@ -76,16 +82,20 @@ export default function ManageStudentsPage() {
     fetchStudents();
   }, []);
 
+  const totalPages = Math.ceil(students.length / pageSize);
+const paginatedStudents = students.slice(
+  (currentPage - 1) * pageSize,
+  currentPage * pageSize
+);
+
+
   return (
     <div className="p-6 min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">Manage Students</h1>
-        <div className="flex gap-3">
-          {/* CSV Upload */}
-          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white transition">
-            Upload CSV
-          </button>
+      
+        
 
           <button
             onClick={handleOpenModal}
@@ -93,7 +103,7 @@ export default function ManageStudentsPage() {
           >
             + Add Student
           </button>
-        </div>
+        
       </div>
 
       {loading && <p className="mb-4 text-gray-500 dark:text-gray-400">Loading students...</p>}
@@ -106,38 +116,40 @@ export default function ManageStudentsPage() {
             <tr className="bg-gray-200 dark:bg-gray-700 text-blue-700 dark:text-blue-300">
               <th className="p-4">Name</th>
               <th className="p-4">Roll No.</th>
-              <th className="p-4">Grade</th>
+              <th className="p-4">Class</th>
+              <th className="p-4">Section</th>
               <th className="p-4">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {students.length === 0 ? (
+            {paginatedStudents.length === 0 ? (
               <tr>
                 <td colSpan="4" className="p-4 text-center text-gray-500 dark:text-gray-400">
                   No students found.
                 </td>
               </tr>
             ) : (
-              students.map((student, index) => (
+              paginatedStudents.map((student, index) => (
                 <tr
                   key={index}
                   className="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 >
                   <td className="p-4">{student.fullName}</td>
                   <td className="p-4">{student.rollNumber || '-'}</td>
-                  <td className="p-4">{student.gradeOrClass || '-'}</td>
+                  <td className="p-4">{student.classLevel || '-'}</td>
+                  <td className="p-4">{student.section || '-'}</td>
                   <td className="p-4 space-x-2">
                     <button
                       onClick={() => handleEdit(index)}
                       className="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm text-white"
                     >
-                      Edit
+                       <PencilSquareIcon className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(index)}
                       className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm text-white"
                     >
-                      Delete
+                      <TrashIcon className="h-4 w-4" />
                     </button>
                   </td>
                 </tr>
@@ -175,6 +187,14 @@ export default function ManageStudentsPage() {
           </div>
         </div>
       )}
+
+<Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+/>
+
+
     </div>
   );
 }

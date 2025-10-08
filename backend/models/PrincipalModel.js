@@ -8,10 +8,8 @@ const principalSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ["owner", "principal", "teacher", "student"], required: true },
   school: { type: mongoose.Schema.Types.ObjectId, ref: "Schools" },  //link to school
-  schoolLogo: {
-    type: String, // will store the file path
-    default: "",
-  },
+ 
+   schoolLogo: { type: String }, //store Cloudinary URL here
 }, { timestamps: true });
 
 //export default mongoose.model("User", userSchema);

@@ -38,14 +38,24 @@ export default function TeacherDashboard() {
       
       {/* Header */}
       <div className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm py-6 px-4 flex flex-col items-center">
-        <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 flex items-center justify-center text-xl font-bold shadow-inner mb-2">
-          {teacher?.name?.charAt(0).toUpperCase() || "T"}
+        <div className="w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 flex items-center justify-center text-xl font-bold shadow-inner mb-2 overflow-hidden relative group">
+          {/* {teacher?.name?.charAt(0).toUpperCase() || "T"} */}
+            {teacher?.schoolLogo ? (
+            <img
+              src={teacher.schoolLogo}
+              alt="School Logo"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span>{teacher?.name?.charAt(0).toUpperCase() || "T"}</span>
+          )}
+
         </div>
         <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
           Teacher Profile
         </h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          School Management System
+          School MockTest System
         </p>
       </div>
 
@@ -86,8 +96,14 @@ export default function TeacherDashboard() {
               />
               <InfoCard
                 icon={<FaBook className="text-yellow-500 text-base" />}
-                label="Experience"
-                value={teacher.experience + " years"}
+                label="classLevel"
+                value={teacher.classLevel + " th"}
+              />
+
+               <InfoCard
+                icon={<FaBook className="text-yellow-500 text-base" />}
+                label="section"
+                value={teacher.section}
               />
               <InfoCard
                 icon={<div className="text-orange-500 text-base">👤</div>}

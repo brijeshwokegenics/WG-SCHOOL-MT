@@ -1,14 +1,18 @@
+//adding class-teacher
+
 "use client";
 
+import CsvUpload from "@/components/CsvUpload";
 import { useState } from "react";
 
-export default function AddTeacherForm({ onAdded = () => {} }) {
+export default function AddTeacherForm({ onAdded = () => { } }) {
   const [form, setForm] = useState({
     fullName: "",
     email: "",
     password: "",
     phone: "",
     classLevel: "",
+    section: "",
     subject: "",
   });
 
@@ -17,7 +21,11 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
   const [successMsg, setSuccessMsg] = useState("");
 
   const handleChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((f) => ({
+      ...f,
+      [name]: name === "section" ? value.toUpperCase() : value,
+    }));
   };
 
   const validate = () => {
@@ -26,7 +34,7 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
     if (!/^\S+@\S+\.\S+$/.test(form.email)) return "Enter a valid email.";
     if (!form.password || form.password.length < 6)
       return "Password must be at least 6 characters.";
-    if (!form.classLevel) return "Please select a class level.";
+    if (!form.classLevel) return "Please select a class.";
     if (!form.subject.trim()) return "Subject is required.";
     return null;
   };
@@ -66,6 +74,7 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
         password: "",
         phone: "",
         classLevel: "",
+        section: "",
         subject: "",
       });
     } catch (err) {
@@ -76,13 +85,56 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
     }
   };
 
+ const handleDownloadCSV = () => {
+  // CSV headers
+  const headers = "fullName,email,password,phone,classLevel,section,subject\n";
+
+  // Sample teacher rows
+  const sampleRows = [
+    "John Doe,john.doe@example.com,Password123,+91 9876543210,5,A,Mathematics",
+    "Pooja Sharma,pooja.sharma@example.com,Secret456,+91 9123456789,8,B,Science",
+    "Amit Verma,amit.verma@example.com,Teacher789,+91 9988776655,10,C,English",
+  ].join("\n");
+
+  const csvContent = headers + sampleRows + "\n";
+
+  // Create a Blob file
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  // Create a hidden download link and click it
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "teacher-CSVFormat.csv"; // File name
+  link.click();
+
+  // Cleanup
+  URL.revokeObjectURL(url);
+};
+
+
   return (
     <div className="max-w-2xl w-full mx-auto bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-xl p-6 sm:p-8 overflow-hidden">
       <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
-        Create a teacher account and assign class level and subject.
+        Create a teacher account and assign class and subject.
         <br className="hidden sm:block" />
         All fields marked <span className="text-red-500">*</span> are required.
       </p>
+
+      {/* CSV Buttons */}
+      <div className="flex items-center justify-start gap-4 mb-6">
+        <button
+          type="button"
+          onClick={handleDownloadCSV}
+          className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+        >
+          Download CSV Format
+        </button>
+
+        <div>
+          <CsvUpload uploadURL="uploadTeacherCsv"/>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Full Name */}
@@ -158,10 +210,10 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
           />
         </div>
 
-        {/* Class Level */}
+        {/* Class */}
         <div>
           <label htmlFor="classLevel" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
-            Class Level <span className="text-red-500">*</span>
+            Class <span className="text-red-500">*</span>
           </label>
           <select
             id="classLevel"
@@ -171,12 +223,31 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
             className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           >
-            <option value="">-- Select Class Level --</option>
-            <option value="Primary(1-5)">Primary (class 1 to 5)</option>
-            <option value="Middle(6-8)">Middle (class 6 to 8)</option>
-            <option value="Secondary(9-10)">Secondary School (class 9 to 10)</option>
-            <option value="Senior(11-12)">Senior Secondary School (class 11 & 12)</option>
+            <option value="">-- Select Class --</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
           </select>
+        </div>
+
+        {/* Section */}
+        <div>
+          <label htmlFor="section" className="block text-sm font-medium text-gray-900 dark:text-gray-200 mb-1.5">
+            Section
+          </label>
+          <input
+            id="section"
+            name="section"
+            value={form.section}
+            onChange={handleChange}
+            type="text"
+            placeholder="e.g. A, B, C..."
+            maxLength={2}
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+
+          />
         </div>
 
         {/* Subject */}
@@ -213,11 +284,10 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
           <button
             type="submit"
             disabled={loading}
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white ${
-              loading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-blue-700 hover:bg-blue-800"
-            } transition w-full sm:w-auto justify-center`}
+            className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg text-white ${loading
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-700 hover:bg-blue-800"
+              } transition w-full sm:w-auto justify-center`}
           >
             {loading ? (
               <>
@@ -241,6 +311,7 @@ export default function AddTeacherForm({ onAdded = () => {} }) {
                 password: "",
                 phone: "",
                 classLevel: "",
+                section: "",
                 subject: "",
               })
             }

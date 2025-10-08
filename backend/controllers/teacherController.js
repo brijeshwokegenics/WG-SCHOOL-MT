@@ -2,39 +2,24 @@ const Teacher = require("../models/TeacherModel");
 const bcrypt = require("bcryptjs");
 const Principal = require("../models/PrincipalModel");
 
-// Allowed class levels
-const VALID_CLASS_LEVELS = [
-  "Primary(1-5)",
-  "Middle(6-8)",
-  "Secondary(9-10)",
-  "Senior(11-12)",
-];
-
 //  Add a new teacher
 exports.addTeacher = async (req, res) => {
   try {
-    const { fullName, email, password, phone, classLevel, subject } = req.body;
+    const { fullName, email, password, phone, classLevel, section, subject } = req.body;
 
-    console.log("Req.user:", req.user);
+    //console.log("Req.user:", req.user);
 
-    //  Ensure principal ID exists
+    // Ensure principal ID exists
     if (!req.user?.id) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: Principal ID missing" });
-    }
-
-    //  Validate class level
-    if (!VALID_CLASS_LEVELS.includes(classLevel)) {
-      return res.status(400).json({
-        message: `Invalid class level. Must be one of: ${VALID_CLASS_LEVELS.join(
-          ", "
-        )}`,
-      });
+      return res.status(401).json({ message: "Unauthorized: Principal ID missing" });
     }
 
     if (!subject || subject.trim() === "") {
       return res.status(400).json({ message: "Subject is required" });
+    }
+
+    if (!classLevel) {
+      return res.status(400).json({ message: "Class level is required" });
     }
 
     // Fetch the principal
@@ -58,16 +43,19 @@ exports.addTeacher = async (req, res) => {
       password: hashedPassword,
       phone,
       createdBy: req.user.id,
-      school: principal.school, // <--- auto linked
+      school: principal.school, // Link teacher to school
       classLevel,
+      section: section?.toUpperCase() || undefined, // Optional, force uppercase
       subject,
     });
 
     const savedTeacher = await newTeacher.save();
+
     res.status(201).json({
       message: "Teacher added successfully",
       teacher: savedTeacher,
     });
+
   } catch (error) {
     console.error("Error adding teacher:", error);
     res.status(500).json({

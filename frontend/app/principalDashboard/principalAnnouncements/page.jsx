@@ -3,11 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import AddAnnouncementForm from './AddAnnouncementForm'; // adjust path if needed
 import { TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import Pagination from '@/components/Pagination';
 
 export default function PrincipalAnnouncements() {
   const [announcements, setAnnouncements] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewAnnouncement, setViewAnnouncement] = useState(null); // for viewing details
+  const [currentPage, setCurrentPage] = useState(1);
+const pageSize = 10;
+
 
   const formatDate = (date) =>
     new Date(date).toLocaleString('en-IN', {
@@ -61,6 +65,13 @@ export default function PrincipalAnnouncements() {
     }
   };
 
+  const totalPages = Math.ceil(announcements.length / pageSize);
+const paginatedAnnouncements = announcements.slice(
+  (currentPage - 1) * pageSize,
+  currentPage * pageSize
+);
+
+
   return (
     <div className="p-4 md:p-8 bg-white dark:bg-gray-900 min-h-screen text-black dark:text-white transition-colors duration-300">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -75,13 +86,13 @@ export default function PrincipalAnnouncements() {
         </button>
       </div>
 
-      {announcements.length === 0 ? (
+      {paginatedAnnouncements.length === 0 ? (
         <p className="text-gray-500 dark:text-gray-400 text-center mt-10">
           No announcements yet.
         </p>
       ) : (
         <div className="space-y-4">
-          {announcements.map((announcement) => (
+          {paginatedAnnouncements.map((announcement) => (
             <div
               key={announcement._id}
               className="bg-gray-100 dark:bg-gray-800 p-5 rounded shadow flex flex-col md:flex-row justify-between items-start md:items-center"
@@ -169,6 +180,15 @@ export default function PrincipalAnnouncements() {
           </div>
         </div>
       )}
+
+
+<Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+/>
+
+
     </div>
   );
 }

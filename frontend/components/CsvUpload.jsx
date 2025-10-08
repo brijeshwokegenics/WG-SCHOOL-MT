@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 
-export default function CsvUpload() {
+export default function CsvUpload({uploadURL}) {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
@@ -44,7 +44,7 @@ export default function CsvUpload() {
     formData.append("file", selectedFile);
 
     try {
-      const response = await fetch("http://localhost:4000/api/upload/uploadTeacherCsv", {
+      const response = await fetch(`http://localhost:4000/api/upload/${uploadURL}`, {
         method: "POST",
         body: formData,
         credentials: "include", // Sends cookies (e.g. JWT)
@@ -76,7 +76,7 @@ export default function CsvUpload() {
       <button
         onClick={handleButtonClick}
         disabled={uploading}
-        className={`py-3 px-6 rounded-md text-white font-medium transition ${
+        className={`px-4 py-2 rounded-md text-white font-medium transition ${
           uploading
             ? "bg-blue-400 cursor-not-allowed"
             : "bg-blue-600 hover:bg-blue-700"
@@ -109,3 +109,5 @@ export default function CsvUpload() {
     </div>
   );
 }
+
+

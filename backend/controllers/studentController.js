@@ -1,74 +1,24 @@
 const Student = require("../models/StudentModel");
-
-//using dob as password in the frontend
-//we can hash dob in future
-//const bcrypt = require("bcryptjs"); // only if you want to hash passwords
-
-// exports.addStudent = async (req, res) => {
-//   try {
-//     const { fullName, rollNumber, phone, dob, gradeOrClass, school } = req.body;
-
-//     // Basic validation
-//     if (!fullName || !rollNumber || !dob) {
-//       return res.status(400).json({ message: "Full name, roll number, and date of birth are required." });
-//     }
-
-//     // Optional: check if a student with same roll number already exists in the same school
-//     if (school) {
-//       const existingStudent = await Student.findOne({ rollNumber, school });
-//       if (existingStudent) {
-//         return res.status(400).json({ message: "Student with this roll number already exists in this school." });
-//       }
-//     }
-
-//     // Optional: hash password if provided
-//     // let hashedPassword = undefined;
-//     // if (password) {
-//     //   hashedPassword = await bcrypt.hash(password, 10);
-//     // }
-
-//     // Create new student
-//     const newStudent = new Student({
-//       fullName,
-//       rollNumber,
-//       phone,
-//       dob,
-//       gradeOrClass,
-//       school,
-//     });
-
-//     await newStudent.save();
-
-//     // Respond with success (omit password)
-//     const { ...studentData } = newStudent.toObject();
-//     res.status(201).json({ message: "Student added successfully", student: studentData });
-//   } catch (err) {
-//     console.error("Error adding student:", err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-
-//const Student = require("../models/StudentModel");
 const Teacher = require("../models/TeacherModel");
 const Principal = require("../models/PrincipalModel"); // if you have a Principal model
 
 exports.addStudent = async (req, res) => {
   try {
-    const { fullName, rollNumber, phone, dob, gradeOrClass } = req.body;
+    const { fullName, rollNumber, dob, classLevel, section } = req.body;
     const userId = req.user.id;
     const userRole = req.user.role;
 
     // Basic validation
-    if (!fullName || !rollNumber || !dob) {
-      return res.status(400).json({ message: "Full name, roll number, and date of birth are required." });
+    if (!fullName || !rollNumber || !dob || !classLevel) {
+      return res.status(400).json({
+        message: "Full name, roll number, date of birth, and class level are required.",
+      });
     }
 
-    // Figure out schoolId based on role
+    // Determine schoolId based on user role
     let schoolId = null;
 
     if (userRole === "principal") {
-      // fetch principal record
       const principal = await Principal.findById(userId).select("school");
       if (!principal) {
         return res.status(404).json({ message: "Principal not found" });
@@ -81,37 +31,49 @@ exports.addStudent = async (req, res) => {
         return res.status(404).json({ message: "Teacher not found" });
       }
       schoolId = teacher.school;
+
     } else {
       return res.status(403).json({ message: "Unauthorized role" });
     }
 
     if (!schoolId) {
-      return res.status(400).json({ message: "No school linked to this user" });
+      return res.status(400).json({ message: "No school linked to this user." });
     }
 
-    // Check duplicate student in same school
-    const existingStudent = await Student.findOne({ rollNumber, school: schoolId });
+    // Check for existing student in the same class and section
+    const existingStudent = await Student.findOne({
+      rollNumber,
+      classLevel,
+      section: section?.toUpperCase() || null,
+      school: schoolId,
+    });
+
     if (existingStudent) {
-      return res.status(400).json({ message: "Student with this roll number already exists in this school." });
+      return res.status(400).json({
+        message: "Student with this roll number already exists in this class and section.",
+      });
     }
 
     // Create new student
     const newStudent = new Student({
       fullName,
       rollNumber,
-      phone,
       dob,
-      gradeOrClass,
+      classLevel,
+      section: section?.toUpperCase() || null,
       school: schoolId,
-      createdBy: userId,   // track who created (principal/teacher)
+      createdBy: userId,
     });
 
     await newStudent.save();
 
-    // Remove sensitive fields if any (e.g., password later)
-    const { password, ...studentData } = newStudent.toObject();
+    const studentData = newStudent.toObject();
+    delete studentData.password; // In case password is added later
 
-    res.status(201).json({ message: "Student added successfully", student: studentData });
+    res.status(201).json({
+      message: "Student added successfully",
+      student: studentData,
+    });
 
   } catch (err) {
     console.error("Error adding student:", err);
@@ -157,15 +119,53 @@ exports.getAllStudent = async (req, res) => {
       }
       schoolId = principal.school;
 
-    } else if (userRole === "teacher") {
-      // Fetch teacher record to get school
-      const teacher = await Teacher.findById(userId).select("school");
-      if (!teacher) {
-        return res.status(404).json({ message: "Teacher not found" });
-      }
-      schoolId = teacher.school;
+    } 
 
-    } else {
+
+    // else if (userRole === "teacher") {
+    //   // Fetch teacher record to get school
+    //   const teacher = await Teacher.findById(userId).select("school");
+    //   if (!teacher) {
+    //     return res.status(404).json({ message: "Teacher not found" });
+    //   }
+    //   schoolId = teacher.school;
+
+    // }
+
+
+    else if (userRole === "teacher") {
+  // Fetch teacher's assigned class, section, and school
+  const teacher = await Teacher.findById(userId).select("school classLevel section");
+
+  if (!teacher) {
+    return res.status(404).json({ message: "Teacher not found" });
+  }
+
+  const schoolId = teacher.school;
+  const classAssigned = teacher.classLevel;
+  console.log("class assigned is=>", classAssigned);
+  const sectionAssigned = teacher.section; // may be undefined
+
+  // Build the filter query
+  const studentFilter = {
+    school: schoolId,
+    classLevel: classAssigned,
+  };
+
+  // Add section to filter if teacher has one assigned
+  if (sectionAssigned) {
+    studentFilter.section = sectionAssigned;
+  }
+
+  // Fetch students based on filters
+  const students = await Student.find(studentFilter);
+  console.log("filter student for teachers panel are:", students)
+
+  return res.status(200).json({ students });
+}
+
+    
+    else {
       return res.status(403).json({ message: "Access denied" });
     }
 

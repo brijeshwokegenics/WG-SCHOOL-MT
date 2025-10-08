@@ -34,18 +34,28 @@ const teacherSchema = new mongoose.Schema(
       required: true,
     },
 
-        // ✅ Link teacher to the school (added field)
+        // Link teacher to the school (added field)
     school: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Schools", // must match your School model name
       required: true,
     },
     
-    classLevel: {
-      type: String,
-      enum: ["Primary(1-5)", "Middle(6-8)", "Secondary(9-10)", "Senior(11-12)"],
-      required: true,
-    },
+
+   
+     classLevel: {
+    type: String,
+    required: true,
+    enum: Array.from({ length: 12 },  (_, i) => (i + 1).toString()), // Validates class 1 to 12
+  },
+
+  section: {
+    type: String,
+    uppercase: true,
+    maxlength: 2,
+  },
+
+
     // New field: Subject taught by the teacher
     subject: {
       type: String,

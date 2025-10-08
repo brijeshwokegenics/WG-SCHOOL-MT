@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import AddStudentForm from '@/app/principalDashboard/AddStudentForm';
 // import CsvUpload from '../CsvUpload';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 
 export default function ManageStudentsPage() {
   const [students, setStudents] = useState([]);
@@ -81,11 +82,8 @@ export default function ManageStudentsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">Manage Students</h1>
+
         <div className="flex gap-3">
-          {/* CSV Upload */}
-          <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white transition">
-            Upload CSV
-          </button>
 
           <button
             onClick={handleOpenModal}
@@ -99,14 +97,16 @@ export default function ManageStudentsPage() {
       {loading && <p className="mb-4 text-gray-500 dark:text-gray-400">Loading students...</p>}
       {error && <p className="mb-4 text-red-500 dark:text-red-400">{error}</p>}
 
+      <h5 className='text-black dark:text-white'>Students here are filtered on the basis of teacher's class and section</h5>
       {/* Student Table */}
       <div className="overflow-x-auto rounded-lg shadow">
-        <table className="w-full table-auto text-left bg-gray-100 dark:bg-gray-800">
+        <table className="min-w-[800px] w-full table-auto text-left bg-gray-100 dark:bg-gray-800">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700 text-blue-700 dark:text-blue-300">
               <th className="p-4">Name</th>
               <th className="p-4">Roll No.</th>
-              <th className="p-4">Grade</th>
+              <th className="p-4">Class</th>
+              <th className="p-4">Section</th>
               <th className="p-4">Actions</th>
             </tr>
           </thead>
@@ -121,23 +121,26 @@ export default function ManageStudentsPage() {
               students.map((student, index) => (
                 <tr
                   key={index}
-                  className="border-t border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  className="overflow-x-auto border-t border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 >
                   <td className="p-4">{student.fullName}</td>
                   <td className="p-4">{student.rollNumber || '-'}</td>
-                  <td className="p-4">{student.gradeOrClass || '-'}</td>
+                  <td className="p-4">{student.classLevel || '-'}</td>
+                  <td className="p-4">{student.section || '-'}</td>
                   <td className="p-4 space-x-2">
                     <button
                       onClick={() => handleEdit(index)}
                       className="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm text-white"
                     >
-                      Edit
+                      <PencilSquareIcon className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleDelete(index)}
                       className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm text-white"
                     >
-                      Delete
+
+                      <TrashIcon className="w-5 h-5" />
+
                     </button>
                   </td>
                 </tr>

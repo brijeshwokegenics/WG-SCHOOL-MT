@@ -1,14 +1,15 @@
 'use client';
 
+import CsvUpload from '@/components/CsvUpload';
 import { useState } from 'react';
 
 export default function AddStudentForm({ onAdded = () => {} }) {
   const [form, setForm] = useState({
     fullName: '',
     rollNumber: '',
-    phone: '',
     dob: '',
-    gradeOrClass: '',
+    classLevel: '',
+    section: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -16,13 +17,18 @@ export default function AddStudentForm({ onAdded = () => {} }) {
   const [successMsg, setSuccessMsg] = useState('');
 
   const handleChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((f) => ({
+      ...f,
+      [name]: name === 'section' ? value.toUpperCase() : value,
+    }));
   };
 
   const validate = () => {
     if (!form.fullName.trim()) return 'Full name is required.';
     if (!form.rollNumber.trim()) return 'Roll number is required.';
     if (!form.dob.trim()) return 'Date of birth is required.';
+    if (!form.classLevel) return 'Class level is required.';
     return null;
   };
 
@@ -60,9 +66,9 @@ export default function AddStudentForm({ onAdded = () => {} }) {
       setForm({
         fullName: '',
         rollNumber: '',
-        phone: '',
         dob: '',
-        gradeOrClass: '',
+        classLevel: '',
+        section: '',
       });
     } catch (err) {
       console.error(err);
@@ -72,12 +78,57 @@ export default function AddStudentForm({ onAdded = () => {} }) {
     }
   };
 
+
+ const handleDownloadCSV = () => {
+  // CSV headers
+  const headers = "fullName,rollNumber,dob,classLevel,section\n";
+
+  // Sample student rows
+  const sampleRows = [
+    "Rohan Mehta,01,2008-05-14,10,A",
+    "Ananya Gupta,02,2009-08-22,9,B",
+    "Karan Sharma,03,2010-01-30,8,A",
+    "Sneha Verma,04,2007-11-18,11,C",
+    "Arjun Patel,05,2011-03-25,7,B",
+  ].join("\n");
+
+  const csvContent = headers + sampleRows + "\n";
+
+  // Create a Blob file
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  // Create a hidden download link and trigger download
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "student-CSVFormat.csv"; // File name
+  link.click();
+
+  // Cleanup
+  URL.revokeObjectURL(url);
+};
+
+
   return (
-    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-900  rounded-2xl p-6 transition-colors duration-300 text-black dark:text-white">
-      {/* <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-1">Add New Student</h3> */}
+    <div className="max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-2xl p-6 transition-colors duration-300 text-black dark:text-white">
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
         Enter student details below. Fields marked * are required.
       </p>
+
+            {/* CSV Buttons */}
+            <div className="flex items-center justify-start gap-4 mb-6">
+              <button
+                type="button"
+                onClick={handleDownloadCSV}
+                className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+              >
+                Download CSV Format
+              </button>
+      
+              <div>
+                <CsvUpload uploadURL="uploadStudentCsv"  />
+              </div>
+            </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Full Name */}
@@ -137,34 +188,41 @@ export default function AddStudentForm({ onAdded = () => {} }) {
           </div>
         </fieldset>
 
-        {/* Phone + Grade */}
+        {/* Class Level + Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium mb-1">
-              Phone
+            <label htmlFor="classLevel" className="block text-sm font-medium mb-1">
+              Class / Grade *
             </label>
-            <input
-              id="phone"
-              name="phone"
-              value={form.phone}
+            <select
+              id="classLevel"
+              name="classLevel"
+              value={form.classLevel}
               onChange={handleChange}
-              type="tel"
-              placeholder="+91 9XXXXXXXXX"
               className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+              required
+            >
+              <option value="">-- Select Class --</option>
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
-            <label htmlFor="gradeOrClass" className="block text-sm font-medium mb-1">
-              Class / Grade
+            <label htmlFor="section" className="block text-sm font-medium mb-1">
+              Section <span className="text-gray-500">(optional)</span>
             </label>
             <input
-              id="gradeOrClass"
-              name="gradeOrClass"
-              value={form.gradeOrClass}
+              id="section"
+              name="section"
+              value={form.section}
               onChange={handleChange}
               type="text"
-              placeholder="e.g. 9A or Grade 10"
+              placeholder="e.g. A or B"
+              maxLength={2}
               className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -220,9 +278,9 @@ export default function AddStudentForm({ onAdded = () => {} }) {
               setForm({
                 fullName: '',
                 rollNumber: '',
-                phone: '',
                 dob: '',
-                gradeOrClass: '',
+                classLevel: '',
+                section: '',
               })
             }
             className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition"
