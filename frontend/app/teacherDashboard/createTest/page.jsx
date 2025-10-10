@@ -41,7 +41,7 @@ export default function CreateTestPage() {
     setTestToEdit(null);
   };
 
-  // 🔹 Fetch all tests
+  //Fetching all tests
   useEffect(() => {
     const fetchTests = async () => {
       try {
@@ -52,8 +52,14 @@ export default function CreateTestPage() {
           credentials: 'include',
         });
         const data = await res.json();
-        if (res.ok) setTests(data.tests || []);
-        else setError(data.message || 'Failed to load tests');
+        console.log('dataa',data)
+        if (res.ok)
+          {
+            setTests(data.tests || []);
+          } 
+        else {
+          setError(data.message || 'Failed to load tests');
+        }
       } catch (err) {
         console.error('Error fetching tests:', err);
         setError('Something went wrong while loading tests');
@@ -87,12 +93,13 @@ export default function CreateTestPage() {
   });
 
 
-  //Pagination
-  const totalPagesCalc = Math.ceil(tests.length / pageSize);
-  const paginatedTests = tests.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  // Pagination
+const totalPagesCalc = Math.ceil(sortedTests.length / pageSize);
+const paginatedTests = sortedTests.slice(
+  (currentPage - 1) * pageSize,
+  currentPage * pageSize
+);
+
 
   const handleTestAdded = (updatedTest) => {
     if (testToEdit) {
@@ -128,17 +135,17 @@ export default function CreateTestPage() {
 
           {showTestTypeDropdown && (
             <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded shadow-lg z-10">
-              {['MCQ', 'True/False','Fill in the Blanks'].map((type) => (
+              {['MCQ', 'True/False', 'Fill in the Blanks', 'Match the Following'].map((type) => (
                 <button
                   key={type}
                   onClick={() => {
-                    if(type==='Fill in the Blanks'){
+                    if (type === 'Fill in the Blanks') {
                       setSelectedTestType('MCQ');
                     }
-                    else{
-setSelectedTestType(type);
+                    else {
+                      setSelectedTestType(type);
                     }
-                    
+
                     setShowTestTypeDropdown(false);
                     setTestToEdit(null);
                     handleOpenModal();
@@ -247,6 +254,7 @@ setSelectedTestType(type);
               onClose={handleCloseModal}
               testType={selectedTestType}
               existingTest={testToEdit}
+              
             />
           </div>
         </div>

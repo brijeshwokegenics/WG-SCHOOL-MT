@@ -38,7 +38,7 @@ export default function SearchFilter({
             value={filterState}
             onChange={(e) => onFilter(e.target.value)}
           >
-            <option value="All" className="bg-white dark:bg-gray-800">All States</option>
+            <option value="All" className="bg-white dark:bg-gray-800">All</option>
             {states && states.map((state) => (
               <option key={state} value={state} className="bg-white dark:bg-gray-800">
                 {state}
